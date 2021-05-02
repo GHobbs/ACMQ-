@@ -1,0 +1,32 @@
+CONST
+  sprite:ARRAY[1..7] OF PointType=((x:0;y:0),(x:8;y:0),(x:6;y:2),(x:8;y:4),
+                                   (x:4;y:8),(x:2;y:6),(x:0;y:8));
+VAR
+  xseta,yseta:INTEGER;
+  tamanho:WORD;
+  pt:POINTER;
+
+PROCEDURE PutSprite(x,y:INTEGER);
+BEGIN
+  PutImage(xseta,yseta,pt^,XORput);
+  xseta:=x;
+  yseta:=y;
+  PutImage(xseta,yseta,pt^,XORput);
+END;
+
+PROCEDURE RemoveSprite;
+BEGIN
+  xseta:=-1000;
+  yseta:=-1000
+END;
+
+PROCEDURE InitSprite(borda,fundo:INTEGER);
+BEGIN
+  SetColor(borda);
+  SetFillStyle(solidfill,fundo);
+  FillPoly(SizeOf(sprite) div SizeOf(PointType),sprite);
+  tamanho:=ImageSize(0,0,8,8);
+  GetMem(pt,tamanho);
+  GetImage(0,0,8,8,pt^);
+  RemoveSprite;
+END;

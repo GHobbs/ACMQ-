@@ -1,0 +1,98 @@
+Frequently asked questions about the XView-PC user interface:
+(With some extra questions about interesting topics added)
+
+General topics:
+
+Q: How can I generate events using the timer?
+A: Very simple:
+   - Redirect the timer tick interrupt to a new routine that does
+     only this (Pascal):
+     IF ie_code=-1 THEN ie_code:=5000;
+     This will create an event with code 5000 when an interrupt
+     occurs while the interface is pooling for events.
+   - Make your event handlers do what you want when receiving
+     ie_code with the value 5000. Use the interposer if you want
+     the events used independently of the mouse position.
+   This does not work with the djgpp version under Go32 with the mouse
+   emulator active (see below).
+
+Q: I need a text editor window.
+A: I also need. Some day I will write one. It is possible to use the
+   handlers of a canvas to implement a complete mouse-driven editor.
+   Simpler solutions are an event handler in a tty object that allows
+   adding (trivial) or deleting (not so) text at the end of the text
+   buffer, or several lines of textfield objects (good for forms).
+
+Q: How to make the program know when a window is being opened or
+   resized?
+A: The notify handler of any canvas object in the window will be called
+   in these occasions. It is possible to create a canvas with zero
+   dimensions, or out of the frame area, and use its notify handler
+   only to detect these events.
+
+Q: How to create a "password" field, where what is typed is not visible?
+A: Put a textfield in a separate window with exclusive access, and set
+   the textfield edit colors to the window background color before
+   opening the window. Make the notify handler of the textfield close
+   the window and restore the normal colors.    
+
+Q: How to generate an event by software? For example, how to make the
+   notify handler of a textfield start the edition of another textfield
+   when the user finishes the edition?
+A: Not very elegant, but works:
+   - Create an integer variable "newevent", and initialize it with 0.
+   - Redirect the timer tick interrupt to a new routine that does this:
+     IF (newevent<>0) and (ie_code=-1) THEN BEGIN
+       ie_code:=newevent;
+       newevent:=0
+     END;
+   - To generate an event, just set "newevent" to the desired event code.
+     The next time when the interface enters the internal polling loop the
+     event will be generated. Use "mouse_move" to locate the mouse pointer
+     over the object that will receive the event. The code in the notify
+     handler of a textfield to cause the edition of another textfield below
+     it would be:
+     mouse_move(mousex,mousey+15);
+     newevent:=MS_LEFT;
+   Again, this may not work with djgpp (see below).
+
+Q: How to implement window minimization and maximization?
+A: This is not very practical. It is better to simply close unnecessary
+   windows. But a possible implementation is:
+   To "minimize" a window: Close the window, and open another small
+   window containing a "message" with the icon representing the minimized
+   window. Do this in the notify handler of a button or a menu.
+   To restore a "minimized" window: Make the notify handler of the
+   message with the icon close the small window and open the original
+   window.
+   Some details: Set xv_end to FALSE, or 0 in C, after the closing of
+   the windows, because "xv_main_loop" will exit if all the windows are
+   closed. Set "adjust_exit" in the minimized windows to TRUE, or 1,
+   to avoid the closing of these windows with the central mouse button.
+   Set the minimum dimensions of the minimized frames so that they
+   always have space for the bitmaps (as always must be done with
+   frames containing bitmaps).
+
+DJGPP version:
+
+Q: The program compiles correctly, but crashes when executed, before
+   drawing anything.
+A: The DOS enfironment variable "TCBGI" must be set to where is the
+   "LITT.CHR" file, or the program will crash.
+
+Q: The program is plotting text in black over black background.
+A: Recompile part of the bcc2grx library, as explained in the xview.h
+   file. The source code for the library is correct, but the library
+   does not correspond to the code.
+
+Q: The initial screen appears black with some strange colored dots
+   marking where the windows should be. When I redraw the windows
+   by resizing them, they appear correctly.
+A: Caused by some bug in a 16 colors driver. Set the "GO32" environment
+   variable to nc 256.
+
+Q: I am using timer interrupts. The program crashes when using the mouse
+   emulator.
+A: A bug in the go32 interrupt handling. Redirected timer interrupts inside
+   some DOS interrupts may cause crashes. Run the program under DPMI, as in
+   a Windows DOS session, wait for djgpp V2, or use the Borland C version...

@@ -1,0 +1,632 @@
+   Esta  documenta‡„o descreve sumariamente o uso do  pro-
+grama HK e de seus programas auxiliares APRA, APRS, APOL e 
+LADDER, que comp”em um pacote para a s¡ntese de  aproxima-
+‡”es para filtros anal¢gicos e para a obten‡„o de realiza-
+‡”es passivas para elas. Inicialmente ‚ feita uma  descri-
+‡„o  dos  programas, seguindo-se um  exemplo  completo  de 
+s¡ntese.
+
+1 - O programa HK
+
+   O programa HK obt‚m aproxima‡”es para filtros  anal¢gi-
+cos cont¡nuos de v rios tipos, usando o m‚todo cl ssico de 
+aproxima‡„o usando a fun‡„o de transdu‡„o H(s) e a  fun‡„o 
+caracter¡stica K(s). 
+
+   Na nota‡„o adotada, a fun‡„o caracter¡stica ‚  definida 
+por   K(s)=F(s)/P(s),  e  a  fun‡„o  de   transdu‡„o   por 
+H(s)=E(s)/P(s). onde F(s), E(s) e P(s) s„o polin“mios  com 
+coeficientes reais. K(s) e H(s) s„o associadas pela  equa-
+‡„o  de  FeldtKeller:  H(s)H(-s)=1+K(s)K(-s),  ou  E(s)E(-
+s)=F(s)F(-s)+P(s)P(-s). Desta forma, ³H(jw)³ ‚ a atenua‡„o 
+do  filtro,  e  a fun‡„o de  transferˆncia  desejada  vale 
+T(s)=k/H(s),  onde  k depende da forma de  realiza‡„o.  Os 
+p¢los  da  fun‡„o de transferˆncia T(s) s„o as  ra¡zes  de 
+E(s), e seus zeros, os zeros de transmiss„o, s„o as ra¡zes 
+de P(s). As ra¡zes de F(s) s„o os zeros de atenua‡„o.
+
+   Apenas aproxima‡”es tipo passa-baixas podem ser direta-
+mente constru¡das pelo programa, mas ‚ poss¡vel  transfor-
+ma-las depois para outras formas. Em todos os c lculos,  o 
+programa  assume aproxima‡”es normalizadas, com  corte  ou 
+freqˆncia central em 1 rad/s.
+
+   Dada  K(s),  o programa calcula H(s), ou dada  H(s),  o 
+programa  calcula K(s). Os polin“mios necess rios, F(s)  e 
+P(s)  ou  E(s) e P(s), podem ser  fornecidos  ao  programa 
+usando-se  a  op‡„o de ler polin“mio, ou  calculados  pelo 
+pr¢prio  programa, nos casos de alguns tipos  particulares 
+de  aproxima‡„o. K(s) ‚ calculada diretamente para  quatro 
+tipos  de aproxima‡„o em que K(jw) ‚ puramente real,  e  ‚ 
+obtida a partir de um polin“mio caracter¡stico Q(w).  H(s) 
+‚ calculada diretemante para a aproxima‡„o de Bessel. 
+
+   Aproxima‡”es polinomiais, onde K(jw)=îQ(w), incluem  as 
+aproxima‡”es  de Butterworth e Chebyschev. O  parƒmetro  î 
+define  a  atenua‡„o na banda passante.  A  aproxima‡„o  ‚ 
+obtida  a  partir do polin“mio caracter¡stico  Q(w),  e  o 
+programa gera os polin“mios adequados para aproxima‡”es de 
+Butterworth  (Q(w)=wn), Chebyschev (Q(w)=Cn(w)) e  Chebys-
+chev  modificada  (Q(w)=CMn(w), que ‚  Cn(w)  com  menores 
+ra¡zes  movidas  para a origem por  uma  transforma‡„o  de 
+Moebius) polin“mios, que levam a aproxima‡”es  intermedi -
+rias entre estes extremos, podem ser gerados pelo programa 
+APOL, e lidos pelo programa.
+
+   Aproxima‡”es      polinomiais      inversas,       onde 
+K(jw)=îà2wn/Qr(w)  e Qr(w)=wnQ(1/w) ‚ o polin“mio Q(w)  com 
+os coeficientes em ordem reversa, incluem as  aproxima‡”es 
+de Chebyschev inversas (Q(w)=Cn(w)). O parƒmetro à  define 
+a  rela‡„o entra a atenua‡„o nas bandas passante e de  re-
+jei‡„o.  Todos os polin“mios ger veis pelo  programa  APOL 
+podem tamb‚m ser usados para estas aproxima‡”es.
+
+   Aproxima‡”es       racionais      sim‚tricas       onde 
+K(jw)=îàQ(w)/Qr(w)  incluem  as  aproxima‡”es   el¡pticas. 
+Polin“mios Q(w) adequados, mesmo para o caso das aproxima-
+‡”es  el¡pticas,  devem ser  gerados  numericamente  pelos 
+programas APRS ou APRA.
+
+   Aproxima‡”es  racionais  sim‚tricas  modificadas,  onde 
+K(jw)=  î(2àQ(w)-Qr(w))/Qr(w)  incluem  aproxima‡”es   com 
+"ripple" uniforme na banda passante e zeros de transmiss„o 
+duplos, de ordem par (um caso algo particular). Polin“mios 
+Q(w) adequados devem ser gerados pelo programa APRS. 
+
+   Outras aproxima‡”es podem ser geradas, fornecendo-se ao 
+programa H(s) ou K(s), e calculando a outra fun‡„o.
+
+   A op‡„o de elevar um polin“mio ao quadrado serve para a 
+obten‡„o de aproxima‡”es cujas fun‡”es K(s) ou H(s)  sejam 
+o quadrado de alguma outra, por exemplo.
+
+2 - Procedimento normal de s¡ntese:
+
+   O processo normal para a gera‡„o de uma aproxima‡„o,  a 
+partir de K(s), e obter uma realiza‡„o para o filtro ‚:
+
+-  Obter  o polin“mio Q(w) e usar um dos quatro  tipos  de 
+aproxima‡„o  para obter K(s), ou ent„o ler diretemente  os 
+polin“mios  F(s) e P(s) gerados externamente.  O  programa 
+APRA pode ser usado para gerar estes polin“mios para qual-
+quer aproxima‡„o passa-baixas com K(jw) real. Os programas 
+APOL  e APRS s„o especializados (e algo  otimizados)  para 
+aproxima‡”es polinomiais diretas ou inversas, e  racionais 
+sim‚tricas,  respectivamente. Eles geram Q(w),  mas  podem 
+tamb‚m gerar F(s) e P(s).  
+
+-  Calcular E(s). O programa resolve a eq. de  FeldtKeller 
+por  fatora‡„o  polinomial,  calculando  primeiramente  as 
+ra¡zes  de E(s)E(-s), e montando o polin“mio E(s)  com  as 
+que  estiverem  no SPLE. Ap¢s este c lculo, as  ra¡zes  de 
+E(s)  podem  ser listadas, salvas, ou  plotadas  no  plano 
+complexo. Gr ficos de ³K(jw)³, ³H(jw)³ e ³T(jw)³ (este  em 
+dB) podem ser plotados t„o logo os polin“mios  necess rios 
+estejam dispon¡veis.
+
+-  Gerar imitƒncias para s¡ntese. O programa gera  imitƒn-
+cias  para s¡ntese por rede LC simplesmente  terminada  ou 
+duplamente  terminada. As impedƒncias LC da realiza‡„o  em 
+"lattice" tamb‚m podem ser calculadas. Termina‡”es  unit -
+rias  s„o usadas, sempre que poss¡vel. As redes  que  rea-
+lizam  estas  imitƒncias podem ser obtidas  pelo  programa 
+LADDER. No caso de realiza‡”es em forma fisicamente  sim‚-
+trica ou antim‚trica, os programas LADDER, SIMET e LATTICE 
+podem ser usados para a obten‡„o das redes, diretamente  a 
+partir das ra¡zes de E(s) no caso de aproxima‡”es com K(s) 
+polinomial  (SIMET), ou a partir das ra¡zes de E(s)  e  de 
+P(s) no caso geral (LADDER e LATTICE). 
+
+   No  caso  de gera‡„o de aproxima‡„o a partir  de  H(s), 
+tendo-se E(s) e P(s), F(s) deve ser calculado, tamb‚m pela 
+equa‡„o  de FeldtKeller. Como n„o existe  necessidade  das 
+ra¡zes  de F(s) estarem no SPLE, o programa pede  o  sinal 
+das  ra¡zes  de F(s)F(-s) que devem compor  F(s).  Aten‡„o 
+deve  ser dada ao sinal das partes imagin rias, que  devem 
+estar  em  pares conjugados, e ao ajuste  das  tolerƒncias 
+para c lculo de ra¡zes no caso de aproxima‡”es cujas  fun-
+‡”es  caracter¡sticas possuam zeros de atenua‡„o  sobre  o 
+eixo  jw. Especialmente nestes casos, recomenda-se usar  a 
+s¡ntese a partir de K(s) sempre que poss¡vel.
+
+   Obtidos os polin“mios F(s), P(s) e E(s), transforma‡”es 
+tipo PB-PA, PB-PF e PB-RF podem ser aplicadas a eles. Isto 
+‚ £til para a verifica‡„o do efeito das transforma‡”es nas 
+curvas  de resposta em freqˆncia e nos p¢los e zeros.  As 
+imitƒncias  para s¡ntese s„o geradas corretamente,  mas  o 
+programa LADDER n„o as realiza por necessitarem de  extra-
+‡”es que n„o s„o no infinito. Para realiza‡„o de aproxima-
+‡”es  convencionais n„o passa-baixas ‚ melhor utilizar  as 
+transforma‡”es  na rede que o programa LADDER  realiza  ao 
+fim  da s¡ntese (Pode tamb‚m ser usado o programa LC,  n„o 
+descrito aqui, que realiza expans”es arbitr rias de  redes 
+LC em "ladder". Ele necessita dos p¢los e zeros da imitƒn-
+cia a expandir, que podem ser calculados pelo HK a  partir 
+dos numeradores e denominadores salvos em disco).
+
+3 - Observa‡”es:
+
+   O  programa HK opera internamente como uma  calculadora 
+RPN polinomial. Acess¡veis externamente s„o os  polin“mios 
+tempor rios X e Y, e os registradores polinomiais Q, F,  P 
+e E.  
+
+   A  rotina de c lculo de ra¡zes de polin“mio usada  pelo 
+programa  ‚  bastante sofisticada, podendo  encontrar  com 
+grande precis„o todas ra¡zes de qualquer multiplicidade de 
+polin“mios  de  ordem  elevada.  Acontece  freqentemente, 
+entretanto, que a rotina n„o perceba que uma ra¡z ‚ m£lti-
+pla,  devido … tolerƒncia inicial para valor de  polin“mio 
+usada,  propositalmente pequena demais  (ra¡zes  m£ltiplas 
+s„o  detectadas pelo m¢dulo da derivada do polin“mio,  mas 
+se forem detectadas indevidamente as demais ra¡zes estar„o 
+erradas).  Nestes casos ela deve ser aumentada at‚ que  as 
+ra¡zes m£ltiplas sejam corretamente calculadas. Este  pro-
+blema ‚ comum no c lculo das ra¡zes de P(s) (para usar  no 
+programa LADDER) quando os zeros de transmiss„o s„o m£lti-
+plos,  e no c lculo de F(s), quando a  aproxima‡„o  possui 
+zeros  de atenua‡„o sobre o eixo imagin rio. Pode  ocorrer 
+tamb‚m que a convergˆncia para uma ra¡z n„o seja  atingida 
+ap¢s um n£mero limite de itera‡”es. Neste caso, o programa 
+para  e pede novos valores para tolerƒncias e  aproxima‡„o 
+da ra¡z. Pode-se aumentar a tolerƒncia para valor de poli-
+n“mio,  caso  em que o programa tentar   encontrar  ra¡zes 
+m£ltiplas, aumentar a tolerƒncia para ra¡zes, caso em  que 
+a  aproxima‡„o atual ser  aceita como ra¡z, ou  n„o  mudar 
+nada  e  tentar mais um ciclo de  itera‡”es.  Raramente  ‚ 
+necess rio  alterar  a aproxima‡„o para a ra¡z.  A  rotina 
+pode  ser usada separadamente, lendo-se o  polin“mio  como 
+qualquer dos polin“mios usados pelo programa e  pedindo-se 
+suas  ra¡zes, que podem ser listadas/salvas  ou  plotadas. 
+Observe-se que as ra¡zes calculadas s„o sempre as do poli-
+n“mio X, e o n£mero de ra¡zes listadas ou plotadas ‚  sem-
+pre  o  grau de X. Se alguma opera‡„o alterar  X  ap¢s  um 
+c lculo  de  ra¡zes, as ra¡zes mostradas poder„o  n„o  ser 
+v lidas.
+
+   No gr fico de ra¡zes, o cursor pode ser movimentado com 
+Return  e  Backspace, o gr fico movido com o cursor,  e  a 
+amplia‡„o  mudada  com + e -. Espa‡o centra o  gr fico  no 
+cursor e Esc termina.
+
+   Nos  outros gr ficos, o cursor ‚ ativado  e  desativado
+com  " ". O gr fico pode ser movimentado com as teclas  do
+cursor, "A", "R", "-" e "+". Esc termina. O cursor se move
+mais rapidamente com a tecla Ctrl pressionada.   Apertando
+outra tecla, o programa permite mudar as escalas ou salvar
+uma tabela com os dados do gr fico.
+
+   Os  programas procuram os "drivers" gr ficos (do  Turbo
+Pascal, arquivos *.BGI) no diret¢rio local ou no diret¢rio
+indicado pela vari vel do DOS "TPBGI". Use o comando abai-
+xo (no autoexec.bat, por exemplo) para setar a vari vel:
+
+set tpbgi=<diret¢rio onde est„o os arquivos *.BGI>
+
+4 - O programa APOL
+
+   Este programa destina-se ao projeto de polin“mios M(w),
+utiliz veis  em  aproxima‡”es  polinomiais  e  polinomiais
+inversas (como Q(w) no HK). Os polin“mios  caracter¡sticos
+gerados s„o pares ou ¡mpares, e oscilam de forma semelhan-
+te a polin“mios de Chebyschev para -1ówó1. Podem ser dire-
+tamente  gerados  polin“mios de  Chebyschev  e  Chebyschev
+modificados por transforma‡„o de Moebius (isto o HK tamb‚m
+faz). Outros polin“mios necessitam de um processo de  oti-
+miza‡„o. O programa pede ent„o o n£mero de ra¡zes na  or¡-
+gem de M(w) e uma s‚rie de parƒmetros f, que s„o os  valo-
+res limites para as oscila‡”es de K(jw)/î=M(w) para 0<wó1.
+No caso de ordem par sem zeros na origem, o primeiro valor
+corresponde a w=0. Os valores "default" correspondem a  um
+polin“mio  de Chebyschev. Outras op‡”es permitem  diversas
+manipula‡”es e um gr fico de M(w).
+
+5 - O programa APRS
+
+   Este programa destina-se ao projeto de polin“mios Q(w),
+utiliz veis em aproxima‡”es racionais sim‚tricas. As  fun-
+‡”es  caracter¡sticas geradas,  tipo  K(jw)/î=àQ(w)/Qr(w),
+s„o  semelhantes  …s  das aproxima‡”es  el¡pticas,  ou  de
+Cauer,  apresentando oscila‡”es nas bandas passante  e  de
+rejei‡„o, com zeros de transmiss„o e atenua‡„o em freqˆn-
+cias inversas uma da outra. Todos os casos s„o gerados por
+otimiza‡„o num‚rica. O programa pede as especifica‡”es  de
+ordem  e  atenua‡„o da aproxima‡„o desejada, o  n£mero  de
+zeros de atenua‡„o na origem e uma s‚rie de parƒmetros  f,
+que s„o os valores de K(jw)/î para 0<w<1 (1§ valor em  w=0
+se  n„o existir ra¡z na origem). Os valores "default"  re-
+sultam em uma aproxima‡„o el¡ptica normal. O programa pode
+tamb‚m  gerar K(s) diretamente. Neste caso, ‚  conveniente
+normalizar  antes a aproxima‡„o para corte em 1  rad/s,  o
+que  o programa pode fazer. Note-se que o programa HK  ne-
+cessita apenas do polin“mio àQ(w) (em que a cte. multipli-
+cativa do polin“mio Q(w) vale à). A fun‡„o  caracter¡stica
+normalizada, K(jw)/î, pode ser plotada para verifica‡„o.
+
+6 - O programa APRA
+
+   Este  programa  projeta o caso geral  das  aproxima‡”es
+passa-baixas  em  que K(jw) ‚ real, podendo  encontrar  as
+mesmas aproxima‡”es que os programas APOL e APRS encontram
+(um pouco mais lentamente), e outras mais. Nestas  aproxi-
+ma‡”es, K(jw)/î=àX(w)/Yr(w), onde X(w) e Y(w) s„o  polin“-
+mios  independentes,  de mesma ordem. O  c lculo  ‚  feito
+tamb‚m  por otimiza‡„o. O programa pede as  especifica‡”es
+de ordem e atenua‡„o (Amax e Amin) da aproxima‡„o a obter,
+o  n£mero  de zeros de atenua‡„o na origem,  o  n£mero  de
+zeros de transmiss„o no infinito (zeros na origem de  X(w)
+e  Y(w)), e os valores extremos fx e fy, de àX(w)/Yr(w)  e
+de àY(w)/Xr(w) para 0<w<1 (1§ valor em w=0 se n„o  existir
+ra¡z na origem). Cada valor extremo de àX(w)/Yr(w), fx=ñ1,
+equivale a um ponto de atenua‡„o Amax na banda passante, e
+cada  passagem  por zero a um zero de atenua‡„o.  Um  Zero
+duplo de atenua‡„o pode ser criado especificando-se  fx=0.
+Para  àY(w)/Xr(w), cada valor extremo fy=ñ1 equivale a  um
+ponto de atenua‡„o Amin na banda de rejei‡„o, e cada  pas-
+sagem por zero a um zero de transmiss„o. Um zero duplo  de
+transmiss„o pode ser criado especificando-se fy=0.
+
+   O programa permite tamb‚m a especifica‡„o dos  extremos
+pela  atenua‡„o desejada em cada um deles. Para o uso  dos
+resultados deste programa no programa HK, a fun‡„o  carac-
+ter¡stica  K(s) deve ser salva, normalmente  antes  norma-
+lizada  para  corte em 1 rad/s.  A  fun‡„o  caracter¡stica
+normalizada, K(jw)/î, pode tamb‚m ser plotada para verifi-
+ca‡„o.
+
+   Nos  trˆs programas, o processo de otimiza‡„o pode  ser
+interrompido pelo toque de uma tecla, se necess rio (quan-
+do  a  convergˆncia com a tolerƒncia  especificada  n„o  ‚
+atingida). Existe tamb‚m um c lculo de ra¡zes  polinomiais
+no  processo de otimiza‡„o, e pode tamb‚m  ser  necess rio
+reduzir a tolerƒncia nas ra¡zes quando a convergˆncia  n„o
+‚  atingida (O programa para ap¢s um n£mero de  itera‡”es,
+sugerindo como nova tolerƒncia o valor atualmente  atingi-
+do. Pode-se aceit -lo ou especificar outro valor, que deve
+ser mantido t„o baixo quanto poss¡vel).
+
+   Ester trˆs £ltimos programas foram desenvolvidos com  o
+objetivo  principal de projetar aproxima‡”es com  "ripple"
+uniforme nas bandas passante e de rejei‡„o, mas com  zeros
+de  atenua‡„o e transmiss„o podendo ser duplos  (Nos  trˆs
+programas  um  caso extremo ‚ obtido nos  casos  de  ordem
+¡mpar especificando-se um zero na origem, os f ¡mpares com
+o valor "default" e os pares como 0. Para ordens pares,  o
+n£mero  de zeros na origem deve ser de 2 ou 4,  dependendo
+da  ordem,  e a regra para os f ‚ a  mesma).  Aproxima‡”es
+assim,  embora  algo menos seletivas que  aquelas  em  que
+todos os zeros s„o simples, s„o realiz veis em formas  com
+menor sensibilidade e apresentam melhores  caracter¡sticas
+de  atraso de grupo. Se os zeros de transmiss„o forem  du-
+plos,  realiza‡”es fisicamente sim‚tricas ou  antim‚tricas
+s„o  poss¡veis, com vantagens para  simula‡”es  anal¢gicas
+integradas,  em que a simetria permite melhor imunidade  a
+gradientes  de processo ou temperatura, e para  simula‡”es
+digitais,  com  menor sensibilidade  a  arredondamento  de
+parƒmetros e poss¡veis simplifica‡”es de "hardware".
+
+7 - O programa LADDER
+
+   Este programa destina-se a realizar os c lculos  neces-
+s rios … expans„o de uma imitƒncia de porta dada em  "lad-
+der" RLC, com zeros de transmiss„o criados pela t‚cnica de
+deslocamento de zeros.
+
+   O  programa  pede inicialmente o tipo  de  imitƒncia  a
+considerar, e a seguir dois conjuntos opcionais de ra¡zes,
+para  serem usados como zeros de transmiss„o a realizar  e
+p¢los da transferˆncia. Os p¢los s„o £teis somente  quando
+da s¡ntese da imitƒncia de meia-rede de uma rede sim‚trica
+ou  antim‚trica.  Estas ra¡zes s„o lidas de  arquivos,  no
+formato  em que s„o salvas pelo programa HK. Sempre que  o
+programa  pedir uma ra¡z a usar em alguma opera‡„o,  estas
+ra¡zes ser„o listadas, e seus valores poder„o ser referen-
+ciados  pelos nomes dados (ou outro valor poder   ser  es-
+crito).
+
+   O programa pede ent„o o que ser  expandido: Uma imitƒn-
+cia  dada por uma raz„o de polin“mios ou uma imitƒncia  de
+meia-rede de uma rede sim‚trica ou antim‚trica. Nos  £lti-
+mos  casos,  as sele‡”es de p¢los e zeros da f.  de  t.  a
+realizar  que  ser„o usados para montar  a  imitƒncia  s„o
+pedidos.  No primeiro caso (o mais usual), s„o  pedidos  o
+numerador  e  o denominador da imitƒncia a  expandir,  que
+podem ser lidos de arquivo (como salvos pelo HK) ou do te-
+clado. No caso de leitura do teclado, os polin“mios  podem
+ser  especificados por seus coeficientes ou por suas  ra¡-
+zes, caso em que os arquivos de p¢los e zeros anteriormen-
+te lidos podem ser £teis.
+
+   A  seguir,  entra-se no processo de expans„o  da  rede.
+Cada  passo da s¡ntese deve ser especificado.  O  programa
+apenas  realiza os c lculos necess rios, ap¢s verificar  a
+possibilidade  das  opera‡”es pedidas. Caso  uma  opera‡„o
+seja imposs¡vel, nada ‚ feito e pode-se tentar outra  ope-
+ra‡„o  na mesma imitƒncia. A qualquer momento,  a  s¡ntese
+pode ser abandonada ou reiniciada, com outra imitƒncia  ou
+com a mesma.
+
+   S„o permitidas extra‡”es parciais e totais de constante
+e  p¢lo no infinito, o que ‚ suficiente para a  realiza‡„o
+de aproxima‡”es passa-baixas. O programa admite  extra‡”es
+em imitƒncias RLC, inclusive para a realiza‡„o de zeros de
+transmiss„o complexos por tanques RLC.
+
+   Ao  fim  da s¡ntese, a rede obtida pode  ser  salva  em
+arquivo,  ou modificada por escalamentos em  freqˆncia  e
+impedƒncia e transforma‡”es tipo PB-PA, PB-PF e PB-RF.  No
+caso  de surgimento de tanques LC compostos,  estes  podem
+ser  convertidos  para a forma de  associa‡„o  de  tanques
+simples.
+
+   Note-se finalmente que, embora os programas  verifiquem
+a  consistˆncia de diversas opera‡”es, o conjunto foi  im-
+plementado  como  ferramenta de investiga‡„o, e  n„o  como
+sistema  especialista.  necess rio que o usu rio saiba  o
+que est  fazendo. "Garbage in - garbage out" vale...
+
+8 - Exemplo completo de s¡ntese:
+
+   Seja  a s¡ntese de um filtro passa-baixas de 7¦  ordem,
+com as especifica‡”es:
+
+-    "Ripple"  uniforme  na banda passante de  1  dB,  com
+     zeros de   atenua‡„o simples.
+-    "Ripple"  uniforme na banda de rejei‡„o, com  Amin=50
+     dB,  sendo  dois pares de zeros duplos e  um  par  de
+     zeros  simples  de transmiss„o, estes  em  freqˆncia
+     mais alta.
+-    Realiza‡„o em "ladder" LC duplamente terminada  fisi-
+     camente sim‚trica, com termina‡”es de 50 Ohms e corte
+     de 1 dB em 20 kHz.
+
+   A  fun‡„o caracter¡stica ‚ gerada pelo  programa  APRA,
+onde  as perguntas sobre especifica‡”es para a  otimiza‡„o
+devem ser respondidas como:
+
+Grau da aproxima‡„o a obter: 7
+No. de zeros de atenua‡„o na origem: 1
+No. de zeros de transmiss„o no infinito: 1
+Atenua‡„o m¡nima na banda de rejei‡„o: 50
+Atenua‡„o m xima na banda passante: 1
+
+î:       0.508847139909587396
+à:      24.929022257639580100
+
+Aproxima‡„o para X(w):
+Aproxima‡„o inicial: w^0.C7(w)
+Extremos de àX(w)/Yr(w) em 0ów<1:
+f(1):      -1.0000000   Aten(1):       1.0000000 dB
+f(2):       1.0000000   Aten(2):       1.0000000 dB
+f(3):      -1.0000000   Aten(3):       1.0000000 dB
+Mudar f, Atenua‡„o, Sinal de f ou Continuar: C
+
+Aproxima‡„o para Y(w):
+Aproxima‡„o inicial: w^0.C7(w)
+Extremos de àY(w)/Xr(w) em 0ów<1:
+f(1):      -1.0000000   Aten(1):      50.0000000 dB
+f(2):       1.0000000   Aten(2):      50.0000000 dB
+f(3):      -1.0000000   Aten(3):      50.0000000 dB
+Mudar f, Atenua‡„o, Sinal de f ou Continuar: F
+Indice: 3
+Extremo f(3): 0
+Extremos de àY(w)/Xr(w) em 0ów<1:
+f(1):      -1.0000000   Aten(1):      50.0000000 dB
+f(2):       1.0000000   Aten(2):      50.0000000 dB
+f(3):       0.0000000   Aten(3):    1000.0000000 dB (inf)
+Mudar f, Atenua‡„o, Sinal de f ou Continuar: C
+
+   Observe-se  que  na  banda  passante,  os  extremos  de
+K(jw)/î=àX(w)/Yr(w)  s„o os valores f dados nas  especifi-
+ca‡”es  para X(w), em ordem crescente de freqˆncia, e  na
+banda de rejei‡„o os valores de K(jw)/î nos extremos entre
+os  zeros  de transmiss„o valem àı/f, com os  f  dados  na
+especifica‡„o de Y(w), em ordem decrescente de freqˆncia.
+Da¡  o  valor  0 no £ltimo f, colocando  zeros  duplos  de
+transmiss„o  no  in¡cio da banda de rejei‡„o.  O  programa
+trata atenua‡”es de mais de 1000 dB como infinitas, da¡  a
+atenua‡„o correspondente ao £ltimo extremo.
+
+   A  partir deste ponto o programa entra no  processo  de
+otimiza‡„o, que pode ser acompanhado pela listagem na tela
+da  tolerƒncia  atual. Se necess rio o processo  pode  ser
+interrompido com o toque de uma tecla. Ao fim da  otimiza-
+‡„o,  ‚ recomendada a observa‡„o do gr fico da fun‡„o  ca-
+racter¡stica  normalizada obtida [G]. Recomenda-se  tentar
+outras especifica‡”es e observar o resultado.
+
+   Ap¢s  a  otimiza‡„o, a fun‡„o caracter¡stica  deve  ser
+escalada  para corte em 1 rad/s, e salva: [E][K]. wp  ‚  a
+freqˆncia  de corte da aproxima‡„o antes do  escalamento.
+Examine-se o efeito no gr fico [G].
+
+wp=      0.948736682747717275
+* K(jw)/î escalado *
+#
+Polin“mio P(s):
+- a( 0):       6.558110987467952850
+- a( 1):      -0.000000000000000000
+- a( 2):      11.415608221834105500
+- a( 3):       0.000000000000000000
+- a( 4):       6.208520159528418960
+- a( 5):      -0.000000000000000000
+- a( 6):       1.000000000000000000
+- Cte:         0.016361146471550049
+Salvar? (Cr ou nome) ex.p
+Polin“mio F(s):
+- a( 0):       0.000000000000000000
+- a( 1):       0.261052862675191122
+- a( 2):      -0.000000000000000000
+- a( 3):       1.369003151627380620
+- a( 4):       0.000000000000000000
+- a( 5):       2.105027909864539030
+- a( 6):      -0.000000000000000000
+- a( 7):       1.000000000000000000
+- Cte:         1.000000000000000000
+Salvar? (Cr ou nome) ex.f
+
+   Passa-se agora ao programa HK, primeiramente fornecendo
+a fun‡„o caracter¡stica calculada, pela leitura de  arqui-
+vos  com  os  coeficientes dos  polin“mios  F(s)  e  P(s):
+[O][F][C], [O][P][C]:
+
+Ler Q(w),F(s),P(s) ou E(s) (ou X(s),Y(s))? F
+Coeficientes, Raizes ou w e Q? C
+Nome do arquivo ou Cr: ex.f
+
+Ler Q(w),F(s),P(s) ou E(s) (ou X(s),Y(s))? P
+Coeficientes, Raizes ou w e Q? C
+Nome do arquivo ou Cr: ex.p
+
+Pede-se  ent„o o c lculo de E(s) [E], e a gera‡„o de  imi-
+tƒncias da rede LC para a s¡ntese em "ladder" LC duplamen-
+te terminada [M][D]. Seja a gera‡„o de z11/rg [1]:
+
+Numerador da imitƒncia:
+- a( 0):       0.117331602261899717
+- a( 1):       0.000000000000000000
+- a( 2):       1.024433127346216610
+- a( 3):       0.000000000000000000
+- a( 4):       1.907482372005927740
+- a( 5):       0.000000000000000000
+- a( 6):       1.000000000000000000
+- Cte:         0.914486910381909324
+Salvar? (Cr ou nome) ex.n11
+Denominador da imitƒncia:
+- a( 0):       0.000000000000000000
+- a( 1):       0.369852787202412714
+- a( 2):       0.000000000000000000
+- a( 3):       1.682129298405598660
+- a( 4):       0.000000000000000000
+- a( 5):       2.314032565401035860
+- a( 6):       0.000000000000000000
+- a( 7):       1.000000000000000000
+- Cte:         2.000000000000000000
+Salvar? (Cr ou nome) ex.d11
+
+   Os  zeros  de transmiss„o, ra¡zes  do  polin“mio  P(s),
+devem  ser  salvos tamb‚m. P(s) possui  ra¡zes  duplas  no
+caso,  e  a tolerƒncia para valor de  polin“mio  deve  ser
+alterada antes do c lculo, para maior precis„o [T]:
+
+M¡nimo valor de polin“mio n„o nulo: 1e-5
+
+   A  seguir, as ra¡zes de P(s) s„o calculadas e  listadas
+[A][P][Z]:
+
+Ra¡zes de Q(w),F(s),P(s) ou E(s) (ou X(s),Y(s))? P
+Calculando...+6 5 +4 3 2 1
+- x( 1):      0.000000000000000     -1.857891001386838j
+- x( 2):     -0.000000000000000      1.857891001386838j
+- x( 3):     -0.000000000000000     -1.174044544830865j
+- x( 4):     -0.000000000000000     -1.174044544830865j
+- x( 5):      0.000000000000000      1.174044544830865j
+- x( 6):      0.000000000000000      1.174044544830865j
+- Cte:        0.016361146471550049
+Salvar? (Cr ou nome) ex.z
+
+   E recomendada a observa‡„o dos gr ficos de resposta  em
+freqˆncia  e das ra¡zes dos polin“mios:  [G][T],  [G][K],
+[G][H], [G][F], [G][A], [A][E][X], [A][P][X], [A][F][X].
+
+   Passa-se agora ao programa LADDER. A imitƒncia a expan-
+dir ‚ uma impedƒncia [I], e os zeros de transmiss„o  devem
+ser lidos. N„o h  p¢los a ler:
+
+Zeros de transmiss„o a realizar (opcional)
+Nome do arquivo: (cr p/ignorar) ex.z
+6 freqˆncias:
+x1:   0.000000000000000  -1.857891001386838j
+x2:  -0.000000000000000   1.857891001386838j
+x3:  -0.000000000000000  -1.174044544830866j
+x4:  -0.000000000000000  -1.174044544830866j
+x5:   0.000000000000000   1.174044544830866j
+x6:   0.000000000000000   1.174044544830866j
+
+Polos da f. de t. a realizar (opcional)
+Nome do arquivo: (cr p/ignorar)
+
+   A  impedƒncia ‚ dada por uma raz„o de  polin“mios  [P],
+lidos a seguir:
+
+Numerador:
+Nome do arquivo: (cr p/teclado) ex.n11
+Denominador:
+Nome do arquivo: (cr p/teclado) ex.d11
+
+   Para  a  realiza‡„o por estrutura sim‚trica,  os  zeros
+simples  ser„o  realizados por um tanque LC no  centro  da
+rede,  e  os duplos por dois tanques iguais,  um  em  cada
+lado.  A  fun‡„o caracter¡sica puramente ¡mpar  garante  a
+simetria  do  resto da rede. A seqˆncia  de  comandos  ‚:
+[I][Z],  [Z],  [Z], [P]. Uma invers„o para criar  p¢lo  no
+infinito, trˆs extra‡”es parciais do p¢lo no infinito para
+criar os trˆs pares de zeros de transmiss„o, e a  extra‡„o
+completa do p¢lo no infinito.
+
+# Admitƒncia:
+z1:   0.000000000000000  -1.857891001386838j
+z2:  -0.000000000000000   1.857891001386838j
+z3:  -0.000000000000000  -1.174044544830866j
+z4:  -0.000000000000000  -1.174044544830866j
+z5:   0.000000000000000   1.174044544830866j
+z6:   0.000000000000000   1.174044544830866j
+Freqˆncia: (Re Im ou nome) z3
+C1:   1.292597534873804 em //
+L2:   0.510799618095358 em tanque // em s‚rie
+C2:   1.420300651398807 em tanque // em s‚rie
+# Admitƒncia:
+Freqˆncia: (Re Im ou nome) z1
+C3:   2.154363713489590 em //
+L4:   1.006392097912381 em tanque // em s‚rie
+C4:   0.287867290054310 em tanque // em s‚rie
+# Admitƒncia:
+Freqˆncia: (Re Im ou nome) z3
+C5:   2.154363713489691 em //
+L6:   0.510799618095558 em tanque // em s‚rie
+C6:   1.420300651398251 em tanque // em s‚rie
+# Admitƒncia:
+C7:   1.292597534874345 em //
+* S¡ntese completa *
+
+   Os  escalamentos em impedƒncia e freqˆncia s„o  feitos
+agora: [N][I], [N][F].
+
+Fator de escalamento em impedƒncia: : 50
+Fator de escalamento em freqˆncia: : 125663.7062
+
+    aconselhavel salvar redes n„o normalizadas com  valo-
+res na nota‡„o cient¡fica, para maior precis„o: [M].
+
+N£mero de decimais: -1
+
+   A  rede final gerada ‚ ent„o listada [E]  (opcional)  e
+salva [S]:
+
+C1:  2.05723287011E-0007  em //
+L2:  2.03240710282E-0004  em tanque // em s‚rie
+C2:  2.26047869245E-0007  em tanque // em s‚rie
+C3:  3.42877634066E-0007  em //
+L4:  4.00430692499E-0004  em tanque // em s‚rie
+C4:  4.58155021460E-0008  em tanque // em s‚rie
+C5:  3.42877634066E-0007  em //
+L6:  2.03240710282E-0004  em tanque // em s‚rie
+C6:  2.26047869245E-0007  em tanque // em s‚rie
+C7:  2.05723287011E-0007  em //
+#
+Arquivo onde salvar: ex.val
+
+   Faltam apenas as termina‡”es, que s„o ambas de 50 Ohms.
+Para  simula‡„o da rede, o arquivo gerado pode  ser  usado
+como lista de valores no programa EDFIL. A estrutura "mid-
+series" da rede ‚ ¢bvia pelos coment rios.
+
+Obs: Os valores num‚ricos no exemplo podem n„o ser  exata-
+mente  os  mesmos obtidos com vers”es  mais  recentes  dos
+programas, onde alguns m‚todos num‚ricos foram modificados
+para  maior  precis„o. O formato das  listagens  pode  ser
+diferente tamb‚m.
+
+Ant“nio Carlos Moreir„o de Queiroz - 28/03/91
+
+E-mail: acmq@coe.ufrj.br

@@ -1,0 +1,88 @@
+{**************************************
+ * Subrotinas para c lculos complexos *
+ **************************************}
+
+TYPE complex=RECORD
+             re,im:REAL
+             END;
+     bufcmplx=STRING[40];
+
+VAR sx,sy,sz,st:complex;
+
+CONST
+  cm=15; dc=10;
+
+FUNCTION StrCmplx(x:complex):bufcmplx;
+   VAR real,imag:STRING[20];
+   BEGIN
+   Str(x.re:13:8,real);
+   Str(x.im:13:8,imag);
+   StrCmplx:=real+' '+imag+'j';
+   END;
+
+PROCEDURE Enter(VAR a:complex);
+   BEGIN
+   st:=sz;
+   sz:=sy;
+   sy:=sx;
+   sx:=a
+   END;
+
+PROCEDURE Somar;
+   BEGIN
+   sx.re:=sx.re+sy.re;
+   sx.im:=sx.im+sy.im;
+   sy:=sz;
+   sz:=st
+   END;
+
+PROCEDURE Subtrair;
+   BEGIN
+   sx.re:=-sx.re;
+   sx.im:=-sx.im;
+   Somar
+   END;
+
+PROCEDURE Multiplicar;
+   VAR k:REAL;
+   BEGIN
+   k:=sx.re*sy.re-sx.im*sy.im;
+   sx.im:=sx.re*sy.im+sx.im*sy.re;
+   sx.re:=k;
+   sy:=sz;
+   sz:=st
+   END;
+
+PROCEDURE Dividir;
+   VAR k,d:REAL;
+   BEGIN
+   d:=Sqr(sx.re)+Sqr(sx.im);
+   k:=sx.re*sy.re+sx.im*sy.im;
+   sx.im:=(sx.re*sy.im-sx.im*sy.re)/d;
+   sx.re:=k/d;
+   sy:=sz;
+   sz:=st
+   END;
+
+PROCEDURE Atribuir(VAR x:complex; r,i:REAL);
+   BEGIN
+   x.re:=r; x.im:=i
+   END;
+
+PROCEDURE LerComplexo(VAR x:complex);
+   {V lida para Turbo 4.0 tamb‚m}
+   VAR buffer:bufcmplx;
+       code,p:INTEGER;
+       t:complex;
+   BEGIN
+   Write(' (',StrCmplx(x),') ');
+   ReadLn(buffer);
+   IF buffer='' THEN Exit;
+   p:=Pos(' ',buffer)-1;
+   IF p<0 THEN p:=Length(buffer);
+   Val(Copy(buffer,1,p),t.re,code);
+   IF code=0 THEN x.re:=t.re;
+   Val(Copy(buffer,p+2,Length(buffer)),t.im,code);
+   IF code=0 THEN x.im:=t.im
+   END;
+

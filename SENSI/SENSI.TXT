@@ -1,0 +1,385 @@
+                     O Programa SENSI
+
+Documenta‡„o v lida para a vers„o 4.9a.
+
+1 - Introdu‡„o
+
+   O programa SENSI analisa circuitos lineares e invariantes  no 
+tempo, utilizando uma forma compacta da an lise nodal  modifica-
+da, e o m‚todo da rede adjunta para a an lise de sensibilidades. 
+Da an lise podem ser obtidos:
+
+- M¢dulo fase e atraso de grupo de uma fun‡„o de transferˆncia.
+- Sensibilidades.
+- Desvios estat¡sticos de m¢dulo e fase.
+- Sensibilidade de p¢los e zeros.
+- Desvios estat¡sticos de p¢los e zeros.
+- An lise de faixa dinƒmica.
+
+2 - Parƒmetros de entrada para o programa
+
+   O programa lˆ a descri‡„o do circuito a analisar em um arqui-
+vo de texto, organizado na forma: 
+
+- Primeira linha: n£mero de n¢s.
+
+- Linhas seguintes: descri‡„o (net-list), um elemento  por 
+  linha:
+- Resistor com resistˆncia R:
+  R<nome> <n¢1> <n¢2> <R>
+- Indutor com indutƒncia L:
+  L<nome> <n¢1> <n¢2> <L>
+- Capacitor com capacitƒncia C:
+  C<nome> <n¢1> <n¢2> <C>
+- Fonte de tens„o controlada a tens„o (VCVS), com ganho Av:
+  E<nome> <n¢Vo+> <n¢Vo-> <n¢Vi+> <n¢Vi-> <Av>
+- Fonte de corrente controlada a corrente (CCCS), com ganho Ai:
+  F<nome> <n¢Io+> <n¢Io-> <n¢Ii+> <n¢Ii-> <Ai>
+- Fonte de corrente controlada a tens„o (VCCS), com  transcondu-
+  tƒncia Gm:
+  G<nome> <n¢Io+> <n¢Io-> <n¢Vi+> <n¢Vi-> <Gm>
+- Fonte   de  tens„o  controlada  a   corrente   (CCVS),   com 
+transresistˆncia Rm:
+  H<nome> <n¢Vo+> <n¢Vo-> <n¢Ii+> <n¢Ii-> <Rm>
+- Girador, com resistˆncia de gira‡„o Rg:
+  Y<nome> <n¢1+> <n¢1-> <n¢2+> <n¢2-> <Rg>
+- Amplificador operacional ideal, modelo nullator-norator:
+  O<nome> <n¢ entr. 1> <n¢ entr. 2> <n¢ sa¡da>
+- Amplificador operacional, com ganho GB/s (GB em rad/s) e 
+  resistˆncia de sa¡da Ro:
+  A<nome> <n¢-> <n¢+> <n¢sa¡da> <GB> <Ro>
+- Transistor bipolar, modelo h¡brido h simplificado:
+  Q<nome>, <n¢ c> <n¢ b> <n¢ e> <hfe> <hie>
+- Transistor MOS:
+  M<nome>, <n¢ d> <n¢ g> <n¢ s> <Gm> <Gds>
+- Fonte de tens„o com resistor em s‚rie Rs:
+  Z<nome> <n¢-> <n¢+> <Rs> <V>
+- Fonte de tens„o:
+  V<nome> <n¢+> <n¢-> <V>
+- Fonte de corrente:
+  I<nome> <n¢+> <n¢-> <I>
+
+   Todas  as  unidades em Ohms, Mhos, Farads e Henrys. O  n¢  de 
+terra ‚ o n¢ 0. Os nomes devem possuir at‚ 5 caracteres,  inclu-
+indo a inicial. Os componentes podem estar em qualquer ordem e a 
+numera‡„o  dos  n¢s tambem, mas deve ser cont¡nua,  sem  n£meros 
+faltando.
+
+   A  descri‡„o  pode ser gerada pelo programa editor  EdFil,  a 
+partir do diagrama esquem tico do circuito.
+
+3 - Resposta em freqˆncia
+
+   O programa considera as entradas do circuito (as fontes  "Z") 
+como fontes de tens„o unit rias. Todos os c lculos referem-se …s 
+tens”es nos n¢s do circuito, que equivalem a fun‡”es de transfe-
+rˆncia das entradas at‚ a¡.
+
+   O gr fico de resposta em freqˆncia pode ser pedido imediata-
+mente  ap¢s a leitura do arquivo de dados, usando-se as  escalas 
+"default", adequadas para circuitos normalizados em  freqˆncia. 
+Outras  escalas  podem ser determinadas antes  da  plotagem  dos 
+gr ficos, ou ajustadas iterativamente durante a plotagem.  Podem 
+ser  plotadas, em um £nico gr fico, curvas de m¢dulo e  fase  da 
+fun‡„o de transferˆncia, atraso de grupo e desvios  estat¡sticos 
+do  m¢dulo e da fase da fun‡„o de  transferˆncia.  Inicialmente, 
+s„o plotadas apenas curvas de m¢dulo, fase e desvio  estat¡stico 
+do m¢dulo. Um cursor pode ser acionado a qualquer instante  para 
+leitura de valores no gr fico.
+
+   V rias  teclas possuem fun‡„o, ao final e durante a  plotagem 
+do gr fico:
+
+- Setas horizontais: Ligam e movimentam o cursor.
+- Ctrl-Setas horizontais: Idem, com passo maior.
+- Tab: Muda a curva selecionada pelo cursor.
+- Del:  Remove do gr fico a curva selecionada (e seleciona a  de 
+  m¢dulo).
+- Ins: Recoloca no gr fico a curva selecionada.
+- Setas  verticais:  Deslocam verticalmente (1/2 tela)  a  curva 
+  selecionada.
+- +  e  -: Amplia (x2) e reduz (/2) o limite superior  da  curva   
+  selecionada.
+- A: Amplia o limite superior de freqˆncia, colocando no gr fi-
+  co  o  que apareceria se a largura da  rea de  plotagem  fosse 
+  dobrada. 
+- R: Reduz o limite superior de freqˆncia, colocando no gr fico 
+  o  que  apareceria se a largura da  rea de  plotagem  fosse  a 
+  metade do que ‚.
+- < e >: Movem as curvas em freqˆncia de 1/2 tela.
+- Return: Redesenha o gr fico, sem o cursor.
+- Espa‡o: Mostra o cursor.
+- E: Liga/desliga o tra‡ado das curvas de m¢dulo e fase com seus 
+  desvios estat¡sticos somados e subtra¡dos.
+- G: Liga/desliga o tra‡ado da grade (as escalas da grade sempre 
+  s„o as da curva selecionada, mesmo que ela esteja invis¡vel).
+- F: Liga/desliga o tra‡ado de curvas de fase.
+- T: Liga/desliga o tra‡ado de curvas de atraso de grupo.
+- Q: Muda a posi‡„o do quadro de medida do cursor.
+- Esc: Encerra a plotagem, retornando ao menu principal.
+
+   Os  valores calculados s„o sempre que  poss¡vel  aproveitados 
+quando as escalas s„o mudadas. O cursor tamb‚m n„o muda de  fre-
+qˆncia,  se poss¡vel. Os gr ficos somente ser„o totalmente  re-
+calculados  se o n¢ de sa¡da do circuito for mudado, ou  se,  no 
+menu  de escalas, o n£mero de segmentos ou a escala de  freqˆn-
+cias  for  mudada. O n£mero inicial de segmentos  (pontos-1)  no 
+gr fico  depende da mem¢ria dispon¡vel, e ‚ normalmente  de  78. 
+Havendo  mem¢ria,  pode ser aumentado at‚ um m ximo  de  256.  O 
+programa  sempre  usa o m ximo valor entre o  especificado  e  o 
+poss¡vel. 
+
+   As  respostas em freqˆncia para v rios circuitos  diferentes 
+podem ser comparadas pelo programa CPSENSI, a partir das tabelas 
+geradas pelo SENSI.
+
+4 - Listagens de sensibilidades
+
+   As sensibilidades S(T,x)=(x/T)*(dT/dx) da fun‡„o de  transfe-
+rˆncia T(s) em rela‡„o a todos os parƒmetros x podem ser  obser-
+vadas  ap¢s a plotagem de um gr fico. A parte real pode ser  in-
+terpretada  como  sendo a sensibilidade do m¢dulo da  fun‡„o  de 
+transferˆncia  em  Nepers e a parte imagin ria como sendo  a  da 
+fase em radianos.  listado tamb‚m o valor de S(T,s), a sensibi-
+lidade  da fun‡„o de transferˆncia em rela‡„o a "s". A  listagem 
+se  inicia pela freqˆncia do cursor, e pode ser mudada  com  as 
+setas horizontais. A mudan‡a se reflete no cursor do gr fico.  O 
+cursor vertical permite que as sensibilidades em rela‡„o a todos 
+os componentes sejam listadas, caso n„o caibam todas na tela.  
+
+   Os parƒmetros que comp”em os elementos com mais de um parƒme-
+tro (A e Q) s„o identificados nesta listagem e nas demais por:
+
+- A<nome> - GB de um amp. op.
+- a<nome> - Ro de um amp. op.
+- Q<nome> - hfe de um transistor bipolar
+- q<nome> - hie de um transistor bipolar
+- M<nome> - Gm de um transistor MOS
+- m<nome> - Rds de umtransistor MOS
+
+5 - An lise da faixa dinƒmica
+
+   Durante  os c lculos para o tra‡ado dos gr ficos de  resposta 
+em freqˆncia, os m ximos e m¡nimos valores do m¢dulo da  fun‡„o 
+de transferˆncia para cada n¢ da rede s„o computados. Os valores 
+s„o acumulados enquanto os gr ficos n„o forem totalmente  recal-
+culados.  As setas verticais permitem a listagem de n¢s que  n„o 
+caibam na tela.
+
+6 - Desvios estat¡sticos
+   
+   Os desvios estat¡sticos representam o erro que se deve  espe-
+rar construindo o circuito com componentes com as variabilidades 
+ou  tolerƒncias dadas, supondo n„o correlacionados os  erros  no 
+valor  dos  parƒmetros. Por exemplo, se X%  dos  parƒmetros  dos 
+componentes usados possuirem menos que a variabilidade dada (com 
+distribui‡„o  normal),  X% dos circuitos que  forem  construidos 
+estar„o dentro dos limites dados pelos desvios. 
+
+   As variabilidades para todos os parƒmetros do circuito  podem 
+ser especificadas, para todos os elementos ou individualmente. O 
+valor  "default"  ‚ de 0.05 (ou 5% de  tolerƒncia).  Alterar  as 
+variabilidades  faz  com que os desvios  sejam  recalculados  (o 
+c lculo ‚ r pido). Esta facilidade permite que o efeito de  cada 
+parƒmetro  no comportamento do circuito seja estudado, e  que  a 
+tolerƒncia necess ria para cada parƒmetro seja facilmente deter-
+minada. Observe-se que o erro em dB causado por uma variabilida-
+de isolada ‚ fun‡„o linear da variabilidade. Por exemplo, se com 
+5%  de  tolerƒncia para todos os componentes o  erro  m ximo  de 
+ganho  em  uma dada freqˆncia for de 5 dB,  se  as  tolerƒncias 
+forem  reduzidas para 1%, o erro cair  para 1 dB.  Inicialmente, 
+as  variabilidades  das fontes independentes s„o nulas,  j   que 
+usualmente n„o s„o consideradas em an lises de sensibilidade. Se 
+necess rio, podem ser alteradas individualmente. A mudan‡a  glo-
+bal de variabilidades n„o as afeta.
+
+7 - Sensibilidades com desconto
+
+   A op‡„o de descontar as sensibilidades do valor em certa fre-
+qˆncia  pode ser usada para eliminar a parte invariante  com  a 
+freqˆncia das sensibilidades, apresentendo apenas os erros  que 
+distorcem  a forma das curvas da resposta em freqˆncia.  Em  um 
+filtro derivado de uma realiza‡„o passiva LC duplamente termina-
+da com m xima transferˆncia de potˆncia, esta freqˆncia ‚  onde 
+o ganho ‚ m ximo (se o m ximo ocorrer em CC, usa-se uma freqˆn-
+cia baixa, n„o nula). Para filtros de outros tipos pode n„o  ser 
+rigorosamente  correto usar esta op‡„o, pois  as  sensibilidades 
+podem  n„o possuir uma parte invariante com a freqˆncia,  ou  o 
+valor  constante pode n„o acontecer para todos os parƒmetros  na 
+mesma freqˆncia. Com o uso da op‡„o, a parte real das  sensibi-
+lidades  listadas  ‚ apresentada com o desconto feito.  Uma  vez 
+feito  um  desconto, ele permanece ativo at‚ que  a  op‡„o  seja 
+desligada ou que o n¢ de sa¡da seja mudado. Note-se que os erros 
+calculados  desta  forma s¢ s„o v lidos em circuitos  em  que  o 
+valor absoluto do ganho n„o seja importante.
+
+8 - Sensibilidades normalizadas pela inclina‡„o
+     
+   A  op‡„o  de normalizar as sensibilidades pela  inclina‡„o  e 
+£til  para eliminar as falsas altas sensibilidades  que  parecem 
+ocorrer  sempre que m¢dulo ou fase variam rapidamente, como  nas 
+vizinhancas de zeros de transmiss„o. Os novos desvios podem  ser 
+interpretados  como  a distƒncia perpendicular entre  as  curvas 
+ideais e as reais de m¢dulo e fase, se os diagramas forem plota-
+dos  em m¢dulo em dB x 20log(w) ("freqˆncia em dB"), e fase  em 
+graus x (180/ã)ln(w) ("freqˆncia em graus").
+
+9 - Sensibilidades dos p¢los e zeros
+
+   Para an lises de sensibilidade de p¢los e zeros, e necess rio 
+um  arquivo de texto contendo os p¢los ou os zeros,  no  formato 
+gerado  pelo  programa IFFT (1a. linha: n£mero  de  freqˆncias. 
+Linhas seguintes: <real> <imag.> de cada p¢lo ou zero). As  sen-
+sibilidades calculadas para p¢los e zeros s„o n„o  normalizadas: 
+S'(s,x)=ds/(dx/x).  Os  desvios estat¡sticos das partes  real  e 
+imagin ria  calculados definem um retƒngulo onde o p¢lo ou  zero 
+dever  estar, centrado na posi‡„o ideal.
+
+   Como  um  refinamento desta medida, s„o  ainda  calculados  a 
+dire‡„o  angular  onde a varia‡„o maior ‚ esperada  e  os  raios 
+maior e menor de uma elipse dentro da qual o p¢lo ou zero dever  
+estar. Os retƒngulos e elipses podem ser plotados juntamente com 
+os p¢los ou zeros em um gr fico. 
+
+   Neste gr fico, as setas do cursor movimentam os limites, +  e 
+- mudam a amplia‡„o e Tab muda a freqˆncia selecionada. Esc en-
+cerra a plotagem.
+
+   O c lculo de sensibilidade dos p¢los s¢ funciona corretamente 
+se  a impedƒncia de entrada da rede, como vista por um corte  no 
+ramo  onde estiver o elemento usado como observador,  que  dever 
+ser dos tipos R, L, C ou Z, possuir como zeros os p¢los  deseja-
+dos,  sendo nula nestas freqˆncias. Ou seja, as  sensibilidades 
+dos  p¢los da rede um rela‡„o ao parƒmetro observador usado  n„o 
+podem ser nulas. O programa verifica isto e n„o calcula as  sen-
+sibilidades de p¢los n„o claramente observ veis. Note-se que  em 
+alguns  circuitos  n„o existe um elemento que observe  todos  os 
+p¢los.  Neste  caso, podem ocorrer problemas num‚ricos,  pois  a 
+impedƒncia  vista por um corte no ramo observador  poss£i  zeros 
+sobre  os p¢los n„o observ veis, e o sistema de  equa‡”es  usado 
+pelo programa torna-se singular. Uma redu‡„o na tolerƒncia  para 
+admitƒncias pode fazer com que o programa fa‡a o c lculo,  apro-
+ximadamente,  assim mesmo, n„o parando por  "determinante  muito 
+pequeno".
+
+   No c lculo de sensibilidade dos zeros ‚ tamb‚m feita a  veri-
+fica‡„o da corre‡„o dos zeros. 
+
+   As  listagens de sensibilidades de p¢los e zeros tem o  mesmo 
+formato  das listagens de sensibilidades, e obedecem aos  mesmos 
+comandos:  cursor  horizontal para mudar  freqˆncias  e  cursor 
+vertical para mudar parƒmetros.
+
+   O parƒmetro de tolerƒncia para impedƒncias e tens”es pode ser 
+aumentado para permitir c lculos aproximados quando os p¢los s„o 
+pouco  observ veis ou n„o muito precisos ou os zeros  n„o  muito 
+precisos.  O outro parƒmetro de tolerƒncia, para  admitƒncias  e 
+freqˆncias,  ‚ usado para detec‡„o de sistemas de equa‡”es  no-
+dais  singulares  (determinante muito pequeno)  e  para  impedir 
+c lculo de sensibilidade de zeros na origem.
+
+   O  programa IFFT deve ser usado para a obten‡„o  precisa  dos 
+p¢los e zeros. Os c lculos devem ser feitos com a op‡„o de apre-
+sentar resultados desnormalizados em freqˆncia.
+
+   Os desvios estat¡sticos dos p¢los e zeros para diversos  cir-
+cuitos  diferentes podem ser comparados pelo programa  CPSPZ,  a 
+partir das tabelas geradas pelo SENSI.
+
+10 - Arquivo de sa¡da
+
+   O  programa  pode criar um arquivo contendo tudo  o  que  for 
+calculado  usando-se  a op‡„o "abrir arquivo de sa¡da"  do  menu 
+principal.  O programa pergunta em ocasi”es  apropriadas  (op‡„o 
+"Salvar", tecla "s", nos menus) se o resultado dos ultimos  c l-
+culos  ou altera‡”es deve ser arquivado. V rios  arquivos  podem 
+ser criados. O arquivo atual ‚ autom ticamente fechado quando  ‚ 
+pedida a an lise de outra rede ou quando o programa ‚ encerrado.
+
+11 - Observa‡”es
+
+   Amplificadores  operacionais ideais devem ser  usados  sempre 
+que possivel, pois isto acelera o processo de solu‡„o do circui-
+to e reduz o erro num‚rico.
+
+   Podem ocorrer problemas num‚ricos se os niveis de  impedƒncia 
+do circuito forem muito elevados ou muito baixos.   recomendado 
+que todas as an lises sejam feitas em circuitos normalizados  em 
+freqˆncia e impedƒncia. Principalmente em impedƒncia.
+
+   Nenhuma  admitƒncia  ou transadmitƒncia  pode  ser  infinita, 
+implicando que resistˆncias e indutƒncias n„o podem ser nulas, e 
+que circuitos contendo indutores ou amplificadores  operacionais 
+reais n„o podem ser analisadas em CC. 
+
+   Em escala logar¡tmica n„o ‚ permitida a an lise em freqˆncia 
+menor  ou igual a zero. As escalas verticais e  horizontais  n„o 
+podem ser invertidas se a grade estiver sendo usada.
+
+   Quando a resolu‡„o usada nos gr ficos n„o ‚ grande,  detalhes 
+importantes  podem ser perdidos. Um caso cr¡tico ‚ o de  m ximos 
+dos  desvios de m¢dulo normalizados pela inclina‡„o, que em  al-
+guns filtros forma picos agudos. O valor correto dos picos  pode 
+ser obtido aumentando-se o n£mero de segmentos, expandindo-se  a 
+escala horizontal, ou tomando-se o valor do desvio n„o  normali-
+zado  na freqˆncia do pico, que coincide com o normalizado,  j  
+que a¡ a curva de m¢dulo ‚ horizontal.
+
+   Nas telas gr ficas, tocando-se as teclas "H" e "V" s„o  acio-
+nadas  rotinas  de impress„o da tela, em formato  horizontal  ou 
+vertical, em impressora tipo EPSON. As rotinas n„o emitem  aviso 
+algum, e somente funcionam com a placa CGA. A impress„o pode ser 
+interrompida tocando-se qualquer tecla.
+
+   A  partir da vers„o 4.4, s„o calculadas as sensibilidades  em 
+rela‡„o … impedƒncia de sa¡da dos amplificadores, antes  ignora-
+da. Foi introduzido tamb‚m o modelo para transistor.
+
+   Na vers„o 4.5, o formato das tabelas e das listagens na  tela 
+foi  mudado. Uma nova vers„o dos programas CPSENSI e CPSPZ  teve 
+que ser escrita. Foi introduzido o transistor MOS. 
+
+   Na vers„o 4.6, pequenas mudan‡as foram feitas no formato  das 
+tabelas e nos comandos dos gr ficos.
+
+   Na  vers„o 4.7, a fonte "F" foi mudada para "Z", e as  letras 
+iniciais  dos segundos parƒmetros dos elementos com mais  de  um 
+foram mudadas para vers”es min£sculas, como prepara‡„o para  uma 
+futura vers„o usando an lise nodal modificada.
+
+   Na vers„o 4.8, a an lise nodal modificada compacta foi imple-
+mentada,  com todas as quatro fontes controladas e as fontes  de 
+tens„o e corrente.
+
+   A  vers„o 4.9 inclui uma vers„o de modo protegido  (sensi-p), 
+que admite gr ficos de maior resolu‡„o. O arquivo de sa¡da passa 
+a incluir as curvas de ganho +/- erro e fase +/- erro. A  vers„o 
+4.9a ‚ um pouco mais r pida devido a uma otimiza‡„o no algor¡tmo 
+de fatora‡„o LU.
+
+   O  programa  SENSI  pode  ser  distribu¡do  livremente   para 
+prop¢sitos  educacionais  e  acadˆmicos,  desde  que  n„o   seja 
+alterado,  e  que referˆncia a seu uso seja feita  em  trabalhos 
+realizados com sua ajuda.
+
+   Coment rios  ou d£vidas sobre a utiliza‡„o do programa  podem 
+ser remetidos para:
+
+Dr. Ant“nio Carlos Moreir„o de Queiroz
+Programa de Engenharia El‚trica, COPPE 
+Universidade Federal do Rio de Janeiro
+CP 68504
+21945-970 Rio de Janeiro, RJ, Brasil
+
+Ou, via e-mail, para: acmq@coe.ufrj.br
+
+ACMQ, 13/01/95
+
+
+
+
+
+
+
+
+
